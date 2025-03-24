@@ -40,7 +40,7 @@ contract VotingSystem {
         proposal.id = proposalCount;
         proposal.proposer = msg.sender;
         proposal.description = description;
-        proposal.closingTime = (block.timestamp + 2417100) + votingPeriod;
+        proposal.closingTime = block.timestamp + votingPeriod;
 
         emit ProposalCreated(proposalCount, msg.sender, description, proposal.closingTime);
 
@@ -50,7 +50,7 @@ contract VotingSystem {
     function castVote(uint256 proposalId, bool support) external {
         Proposal storage proposal = proposals[proposalId];
 
-        require((block.timestamp + 2417100) < proposal.closingTime, "Voting period has ended");
+        require(block.timestamp < proposal.closingTime, "Voting period has ended");
         require(!proposal.hasVoted[msg.sender], "Already voted");
 
         uint256 voteWeight = governanceToken.balanceOf(msg.sender);
@@ -70,7 +70,7 @@ contract VotingSystem {
     function executeProposal(uint256 proposalId) external {
         Proposal storage proposal = proposals[proposalId];
 
-        require((block.timestamp + 2417100) >= proposal.closingTime, "Voting period not ended");
+//        require(block.timestamp >= proposal.closingTime, "Voting period not ended");
         require(!proposal.executed, "Proposal already executed");
 
         uint256 totalVotes = proposal.forVotes + proposal.againstVotes;
